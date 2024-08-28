@@ -1,0 +1,80 @@
+== Changelog ==
+= 1.1.14.1 - 2024-08-28 =
+* Hot Fix -A bug that would cause Gravity Forms Notifications not to load correctly
+* Tested for WP 6.6.1
+* Tested For Mailpoet 5.0.2
+* Tested For Gravity Forms 2.8.17
+
+= 1.1.14 - 2020-10-01 =
+* Tested for WP 5.5.1
+* Tested For Mailpoet 3.51.1
+
+= 1.1.13 - 2020-06-08 =
+* Fix mail not sent issue if subscriber exist and the language is not english
+
+= 1.1.12 - 2019-07-25 =
+* Fix mail not sent if subscriber exist
+
+= 1.1.11 - 2019-07-03 =
+* Support API to subscribe/unsubscribe
+
+= 1.1.10 - 2019-07-02 =
+* Fixed confirmation email not sent for existing user and retain the existing list
+
+= 1.1.9 - 2019-06-11 =
+* Fixed welcome email not send bug
+* Used MailPoet API to add/update the subscriber
+
+= 1.1.8 - 2019-04-27 =
+* Added MailPoet custom field support
+
+= 1.1.7 - 2019-04-25 =
+* Fixed translation issue
+
+= 1.1.6 - 2019-04-19 =
+* Fixes - Old list replacement issue
+* Fixes - Confirmation email won't sent sometime
+
+= 1.1.5 - 2019-02-28 =
+* Fixes - Issues with latest Mailpoet v3.19.3
+* Fixes - Issues with WordPress 5.1
+* Fixes - Issues related to Mailpoet lists not updating and confirmation email not sent.
+
+
+= 1.1.4 - 2019-01-17 =
+* Feature - Set option to not send subscription confirmation email. Thanks Jonathan Pasquier.
+
+= 1.1.3 - 2018-07-23 =
+* Add array_column patch for PHP 5.4
+
+= 1.1.2 - 2018-05-24 =
+* Resolved - PHP Fatal error: Class ‘GF_Field’ not found in ../wp-content/plugins/add-on-gravity-forms-mailpoet/mailpoet-fields.php on line 6
+
+= 1.1.2
+* some fixing.
+* Add GDPR Competitivity.
+
+= 1.1.1 - 2018-05-23 =
+* Updated two files (add-on-gravity-forms-mailpoet.php, mailpoet-fields.php)
+
+= 1.1.0 - 2018-05-22 =
+* Added a new features, register with the lists that the user wants, not that all are mandatory.
+
+= 1.0.3 - 2018-03-07 =
+* Subscribed people now allow to be added to the new lists.
+* Changed the short title of 'Gravity Form' menu.
+
+= 1.0.2 - 2017-11-29 =
+* Fixed text domain add-on-gravity-forms-mailpoet
+
+= 1.0.1 =
+* Fixed Text Domain
+
+= 1.0.0 =
+* Initial release.
+
+== Upgrade Notice ==
+
+= x.0.0 =
+* There are nothing else needed, than upgrading from the WordPress plugins screen.
+
