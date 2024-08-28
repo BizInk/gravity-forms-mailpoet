@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Add-on Gravity Forms - Mailpoet 3
+ * Plugin Name:       Add-on Gravity Forms - Mailpoet
  * Description:       Add a MailPoet 3 signup field to your Gravity Forms.
  * Version:           1.1.14.1
  * Author:            Tikweb
