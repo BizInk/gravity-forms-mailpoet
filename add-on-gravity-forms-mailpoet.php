@@ -39,12 +39,8 @@ if ( ! defined( 'WPINC' ) ) {
 */
 
 function agfm_load_text_domain() {
-
-	load_plugin_textdomain( 'add-on-gravity-forms-mailpoet', false,
-		dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-
+	load_plugin_textdomain( 'add-on-gravity-forms-mailpoet', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
-
 add_action( 'plugins_loaded', 'agfm_load_text_domain' );
 
 /**
@@ -62,7 +58,7 @@ if ( ! is_plugin_active( 'mailpoet/mailpoet.php' ) ) {
         <div class="error">
             <p>
 				<?php
-				$name    = 'Add-on Gravity Forms - Mailpoet 3';
+				$name    = 'Add-on Gravity Forms - Mailpoet';
 				$mp_link = '<a href="https://wordpress.org/plugins/mailpoet/" target="_blank">MailPoet</a>';
 				printf(
 					__( '%s plugin requires %s plugin, Please activate %s first to using %s.',
@@ -139,13 +135,14 @@ use MailPoet\Models\Segment;
 use MailPoet\Subscribers\ConfirmationEmailMailer;
 use MailPoet\Subscribers\NewSubscriberNotificationMailer;
 
+// use MailPoet\Models\CustomField;
 
 /*
  * Add a MailPoet custom field in each gravity form field
  *
  */
 
-add_action( 'gform_field_standard_settings', 'my_standard_settings', 10, 2 );
+// add_action( 'gform_field_standard_settings', 'my_standard_settings', 10, 2 );
 function my_standard_settings( $position, $form_id ) {
 
 	//create settings on position 25 (right after Field Label)
@@ -156,14 +153,34 @@ function my_standard_settings( $position, $form_id ) {
 				<?php esc_html_e( 'MailPoet custom field ID', 'gravityforms' ); ?>
 				<?php gform_tooltip( 'form_field_encrypt_value' ) ?>
             </label>
-            <input type="text" id="mcf_field_name" class="fieldwidth-3"
-                   onkeyup="SetFieldProperty('mpcfName', this.value);" value="" size="35"/>
+            <input type="text" id="mcf_field_name" class="fieldwidth-3" onkeyup="SetFieldProperty('mpcfName', this.value);" value="" size="35"/>
         </li>
 		<?php
 	}
 }
 
+// add_filter( 'gform_tooltips', 'add_encryption_tooltips' );
+function add_encryption_tooltips( $tooltips ) {
 
+	//$fields  = CustomField::findMany();
+	$results = array();
+	/*
+	foreach ( $fields as $field ) {
+		$results[ 'cf_' . $field->id ] = $field->name;
+	}
+	*/
+	if ( ! empty( $results ) ) {
+		$tooltips['form_field_encrypt_value'] = '';
+		foreach ( $results as $key => $value ) {
+			$tooltips['form_field_encrypt_value'] .= __("MailPoet custom field name: ", "add-on-gravity-forms-mailpoet") . "<i>" . $value . "</i>" . "<br>" . __("MailPoet custom field ID : ", "add-on-gravity-forms-mailpoet") . "<strong>" . $key . "</strong>" . "<br><br>";
+		}
+	} else {
+		$tooltips['form_field_encrypt_value'] = __("No MailPoet custom field available", "add-on-gravity-forms-mailpoet");
+	}
+
+	return $tooltips;
+}
+/*
 add_action( 'gform_editor_js', function () {
 	echo '<script type="text/javascript">' . PHP_EOL;
 	foreach ( GF_Fields::get_all() as $gf_field ) {
@@ -181,13 +198,13 @@ add_action( 'gform_editor_js', function () {
 
 	echo '</script>' . PHP_EOL;
 } );
-
-
+*/ 
 
 /**
  * Add mailpoet list to choice.
  */
-add_action( 'gform_predefined_choices', 'mailpoet_predefiend_list' );
+// add_action( 'gform_predefined_choices', 'mailpoet_predefiend_list' );
+/*
 function mailpoet_predefiend_list( $choices ) {
 	$ret = array();
 
@@ -205,10 +222,12 @@ function mailpoet_predefiend_list( $choices ) {
 
 	return $ret;
 }
+*/
 
 /**
  * Set default input
  */
+/*
 add_action( 'gform_editor_js_set_default_values', 'mailpoet_list_set_default' );
 function mailpoet_list_set_default() {
 	$segments = Segment::where_not_equal( 'type', Segment::TYPE_WP_USERS )->findArray();
@@ -232,7 +251,7 @@ function mailpoet_list_set_default() {
     break;
 	<?php
 }
-
+*/
 
 /**
  * Process form submission, make subscriber, etc.

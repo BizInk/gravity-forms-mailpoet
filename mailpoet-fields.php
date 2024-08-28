@@ -203,4 +203,4 @@ class GF_Field_Mailpoet extends GF_Field {
 
 }
 
-GF_Fields::register( new GF_Field_Mailpoet() );
+// GF_Fields::register( new GF_Field_Mailpoet() );
