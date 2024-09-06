@@ -1,8 +1,4 @@
 <?php
-
-use MailPoet\Models\Subscriber;
-use MailPoet\Models\Segment;
-
 GFForms::include_feed_addon_framework();
 
 class GFNEWMailPoetAddOn extends GFFeedAddOn {
@@ -83,6 +79,7 @@ class GFNEWMailPoetAddOn extends GFFeedAddOn {
 		if ( ! $this->is_mailpoet_installed() ) {
 			return;
 		}
+		$mailpoet = \MailPoet\API\API::MP('v1');
 
 //        $feedName  = $feed['meta']['feedname'];
 
@@ -123,11 +120,17 @@ class GFNEWMailPoetAddOn extends GFFeedAddOn {
 
 
 		//If subscriber exist then get the subscriber's existing list and marge
-		$subscriber = Subscriber::findOne( $merge_vars['email'] );
+		try{
+			$subscriber = $mailpoet->getSubscriber( $merge_vars['email'] );
+			// $subscriber = Subscriber::findOne( $merge_vars['email'] );
+		}
+		catch (Exception $e){
+			$subscriber = null;
+		}
 
 		if ( $subscriber ) {
-			$subscriber->withSubscriptions();
-			$old_lists = $subscriber->subscriptions;
+			// $subscriber->withSubscriptions();
+			$old_lists = $subscriber['subscriptions'];
 
 			foreach ( $old_lists as $key => $value ) {
 				$list_ids[] = $value['segment_id'];
@@ -135,6 +138,7 @@ class GFNEWMailPoetAddOn extends GFFeedAddOn {
 			$mailpoetlists = array_unique(array_merge( $mailpoetlists, $list_ids ));   //used array_unique() to get only the unique ids.
 		}
 
+		/*
 		//If registered user is in woocommerce or wp user list, remove that list ids first
 		$wp_segment = Segment::whereEqual('type', Segment::TYPE_WP_USERS)->findArray();
 		$wc_segment = Segment::whereEqual('type', Segment::TYPE_WC_USERS)->findArray();
@@ -146,6 +150,7 @@ class GFNEWMailPoetAddOn extends GFFeedAddOn {
 		if (($key = array_search($wc_segment[0]['id'], $mailpoetlists)) ) {
 			unset($mailpoetlists[$key]);
 		}
+		*/
 
 
 		//Saving the updated list
@@ -188,17 +193,29 @@ class GFNEWMailPoetAddOn extends GFFeedAddOn {
 		if ($skipEmailValidation) {
 			$options['send_confirmation_email'] = false;
 			$subscriber_data['status']          = 'subscribed';
-			Subscriber::createOrUpdate( $subscriber_data );
+			try{
+				$mailpoet->updateSubscriber( $subscriber_data['email'], $subscriber_data );
+			}
+			catch (Exception $e){
+				
+			}
+			//Subscriber::createOrUpdate( $subscriber_data );
 		}
 		else if (!$skipEmailValidation) {
 			$options['send_confirmation_email'] = true;
 			$subscriber_data['status']          = 'unconfirmed';
-			Subscriber::createOrUpdate( $subscriber_data );
+			try{
+				$mailpoet->updateSubscriber( $subscriber_data['email'], $subscriber_data );
+			}
+			catch (Exception $e){
+				
+			}
+			//Subscriber::createOrUpdate( $subscriber_data );
 		}
 
 
 		try {
-			$subscriber_data = \MailPoet\API\API::MP( 'v1' )->addSubscriber( $subscriber_data, $mailpoetlists, $options );
+			$subscriber_data = $mailpoet->addSubscriber( $subscriber_data, $mailpoetlists, $options );
 
 		} catch ( Exception $exception ) {
 
@@ -206,31 +223,14 @@ class GFNEWMailPoetAddOn extends GFFeedAddOn {
 			if ( 12 == $exception->getCode() ) {
 				try {
 
-					//==  Below code is modifed in version 1.1.13 by k4mrul  ==\\
-
 					//If subscriber already exist, simply add subscriber to the new list. Subscriber status will be subscribed as s/he already confirmed email. s/he may get a new mail from mailpoet for confirmation but s/he already counted as subscribed
-					$existingUser = \MailPoet\API\API::MP( 'v1' )->getSubscriber($subscriber_data['email']);
-
-					\MailPoet\API\API::MP( 'v1' )->subscribeToLists($existingUser['subscriptions'][0]['subscriber_id'], $mailpoetlists , $options);
-
-					//Previous code. Previously we make the subscriber status unconfirmed and let him/her to confirm the email for new list. But that's not how mailpoet's default behavior works.
-
-//					if ($skipEmailValidation) {
-//						$subscriber_data['status']          = 'subscribed';
-//						Subscriber::createOrUpdate( $subscriber_data );
-//					}
-//					else {
-//						$subscriber_data['status']          = 'unconfirmed';
-//						Subscriber::createOrUpdate( $subscriber_data );
-//						$subscriber = \MailPoet\API\API::MP( 'v1' )->subscribeToLists( $subscriber_data['email'], $mailpoetlists, $options['send_confirmation_email'] = true );
-//					}
+					$existingUser = $mailpoet->getSubscriber($subscriber_data['email']);
+					$mailpoet->subscribeToLists($existingUser['subscriptions'][0]['subscriber_id'], $mailpoetlists , $options);
 
 
 				} catch ( Exception $exception ) {
 
 				}
-
-			} else {
 
 			}
 		}
@@ -340,11 +340,13 @@ class GFNEWMailPoetAddOn extends GFFeedAddOn {
 
 	public function get_mailpoet_lists() {
 		$mailpoet_lists     = array();
-		$subscription_lists = \MailPoet\API\API::MP( 'v1' )->getLists();
-		foreach ( $subscription_lists as $list ) {
-			$mailpoet_lists[] = array( 'list_id' => $list['id'], 'name' => $list['name'] );
+		if (class_exists(\MailPoet\API\API::class)) {
+			$mailpoet = \MailPoet\API\API::MP('v1');
+			$subscription_lists = $mailpoet->getLists();
+			foreach ( $subscription_lists as $list ) {
+				$mailpoet_lists[] = array( 'list_id' => $list['id'], 'name' => $list['name'] );
+			}
 		}
-
 		return $mailpoet_lists;
 	}
 
@@ -378,7 +380,7 @@ class GFNEWMailPoetAddOn extends GFFeedAddOn {
 	}
 
 	private function is_mailpoet_installed() {
-		return class_exists( '\MailPoet\API\API' );
+		return class_exists(\MailPoet\API\API::class);
 	}
 
 }

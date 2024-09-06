@@ -1,4 +1,7 @@
 == Changelog ==
+= 1.1.14.2 - 2024-09-06 =
+* Fixes - Fixed bugs with the API integration with Mailpoet
+
 = 1.1.14.1 - 2024-08-28 =
 * Hot Fix -A bug that would cause Gravity Forms Notifications not to load correctly
 * Tested for WP 6.6.1
